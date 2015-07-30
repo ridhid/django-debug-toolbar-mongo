@@ -146,13 +146,6 @@ def _cursor_refresh(cursor_self):
         'stack_trace': _get_stacktrace(),
     }
 
-    if is_getmore:
-        # getMore not query - move on
-        query_data['cursor'] = id(cursor_self)
-        query_data['operation'] = 'getmore'
-        queries.append(query_data)
-        return result
-
     # Collection in format <db_name>.<collection_name>
     collection_name = privar('collection')
     query_data['collection'] = collection_name.full_name.split('.')[1]
@@ -176,6 +169,18 @@ def _cursor_refresh(cursor_self):
             query_data['query'] = query_son['pipeline']
             query_data['skip'] = 0
             query_data['limit'] = None
+        elif 'createIndexes' in query_son:
+            query_data['collection'] = query_son['createIndexes']
+            query_data['operation'] = 'indexes'
+            query_data['query'] = query_son['indexes']
+            query_data['skip'] = 0
+            query_data['limit'] = None
+        elif 'distinct' in query_son:
+            query_data['collection'] = query_son['distinct']
+            query_data['operation'] = 'distinct'
+            query_data['query'] = query_son['query']
+            query_data['skip'] = 0
+            query_data['limit'] = None
     else:
         # Normal Query
         query_data['skip'] = privar('skip')
@@ -183,6 +188,13 @@ def _cursor_refresh(cursor_self):
         query_data['query'] = query_son.get('$query') or query_son
         query_data['ordering'] = _get_ordering(query_son)
         query_data['cursor'] = id(cursor_self)
+
+    if is_getmore:
+        # getMore not query - move on
+        query_data['cursor'] = id(cursor_self)
+        query_data['operation'] = "getmore -> {operation}".format(
+            operation=query_data['operation']
+        )
 
     queries.append(query_data)
 
