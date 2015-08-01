@@ -162,7 +162,7 @@ def _cursor_refresh(cursor_self):
             query_data['operation'] = 'count'
             query_data['skip'] = query_son.get('skip')
             query_data['limit'] = abs(query_son.get('limit', 0))
-            query_data['query'] = query_son['query']
+            query_data['query'] = query_son.get('query')
         elif 'aggregate' in query_son:
             query_data['collection'] = query_son['aggregate']
             query_data['operation'] = 'aggregate'
@@ -178,7 +178,7 @@ def _cursor_refresh(cursor_self):
         elif 'distinct' in query_son:
             query_data['collection'] = query_son['distinct']
             query_data['operation'] = 'distinct'
-            query_data['query'] = query_son['query']
+            query_data['query'] = query_son.get('query')
             query_data['skip'] = 0
             query_data['limit'] = None
     else:
