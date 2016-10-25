@@ -2,6 +2,7 @@ import functools
 import time
 import inspect
 import os
+import logging
 import SocketServer
 
 import django
@@ -10,6 +11,10 @@ from django.conf import settings
 import pymongo
 import pymongo.collection
 import pymongo.cursor
+
+
+logger = logging.getLogger('mongo.queries')
+
 
 __all__ = ['queries', 'inserts', 'updates', 'removes', 'install_tracker',
            'uninstall_tracker', 'reset']
@@ -197,7 +202,7 @@ def _cursor_refresh(cursor_self):
         )
 
     queries.append(query_data)
-
+    logger.debug("{time}: {query}".format(time=query_data.get('time'), query=query_data.get('query')))
     return result
 
 def install_tracker():
